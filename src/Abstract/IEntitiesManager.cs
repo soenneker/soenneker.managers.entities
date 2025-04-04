@@ -40,7 +40,7 @@ public interface IEntitiesManager<TEntity> : IBaseManager where TEntity : Entity
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A list of entities.</returns>
     [Pure]
-    ValueTask<List<TEntity>> GetList<TResponse>(RequestDataOptions options, CancellationToken cancellationToken = default);
+    ValueTask<List<TEntity>> GetAll<TResponse>(RequestDataOptions options, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Updates an existing entity in the data store.

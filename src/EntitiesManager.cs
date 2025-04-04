@@ -57,7 +57,7 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
         return document.Adapt<TEntity>();
     }
 
-    public virtual async ValueTask<List<TEntity>> GetList<TResponse>(RequestDataOptions options, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<List<TEntity>> GetAll<TResponse>(RequestDataOptions options, CancellationToken cancellationToken = default)
     {
         List<TDocument> docs = await Repo.GetAll(null, cancellationToken).NoSync();
 
