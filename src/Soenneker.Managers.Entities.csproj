@@ -45,6 +45,6 @@
         <PackageReference Include="Mapster" Version="7.4.0" />
         <PackageReference Include="Soenneker.Cosmos.Repository" Version="3.0.6884" />
         <PackageReference Include="Soenneker.Dtos.RequestDataOptions" Version="3.0.24" />
-        <PackageReference Include="Soenneker.Managers.Base" Version="3.0.93" />
+        <PackageReference Include="Soenneker.Managers.Base" Version="3.0.94" />
     </ItemGroup>
 </Project>
