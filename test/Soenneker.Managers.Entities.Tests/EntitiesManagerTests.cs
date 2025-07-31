@@ -1,5 +1,4 @@
-﻿using Soenneker.Managers.Entities.Abstract;
-using Soenneker.Tests.FixturedUnit;
+﻿using Soenneker.Tests.FixturedUnit;
 using Xunit;
 
 namespace Soenneker.Managers.Entities.Tests;

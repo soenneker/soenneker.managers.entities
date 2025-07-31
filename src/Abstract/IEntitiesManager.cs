@@ -1,11 +1,11 @@
-﻿using Soenneker.Entities.Entity;
+﻿using Soenneker.Dtos.RequestDataOptions;
+using Soenneker.Dtos.Results.Paged;
+using Soenneker.Entities.Entity;
 using Soenneker.Exceptions.Suite;
-using System.Collections.Generic;
+using Soenneker.Managers.Base.Abstract;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
-using Soenneker.Dtos.RequestDataOptions;
-using Soenneker.Managers.Base.Abstract;
 
 namespace Soenneker.Managers.Entities.Abstract;
 
@@ -40,7 +40,7 @@ public interface IEntitiesManager<TEntity> : IBaseManager where TEntity : Entity
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A list of entities.</returns>
     [Pure]
-    ValueTask<List<TEntity>> GetAll<TResponse>(RequestDataOptions options, CancellationToken cancellationToken = default);
+    ValueTask<PagedResult<TEntity>> GetAll<TResponse>(RequestDataOptions options, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Updates an existing entity in the data store.

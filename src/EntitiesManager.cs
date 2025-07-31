@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Mapster;
+﻿using Mapster;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Soenneker.Cosmos.Repository.Abstract;
 using Soenneker.Documents.Document;
 using Soenneker.Dtos.RequestDataOptions;
+using Soenneker.Dtos.Results.Paged;
 using Soenneker.Entities.Entity;
 using Soenneker.Exceptions.Suite;
 using Soenneker.Extensions.ValueTask;
@@ -14,6 +12,10 @@ using Soenneker.Managers.Base;
 using Soenneker.Managers.Entities.Abstract;
 using Soenneker.Redis.Util.Abstract;
 using Soenneker.Utils.UserContext.Abstract;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Soenneker.Managers.Entities;
 
@@ -25,8 +27,8 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
     /// </summary>
     protected ICosmosRepository<TDocument> Repo { get; }
 
-    protected EntitiesManager(ICosmosRepository<TDocument> repo, IRedisUtil redisUtil, ILogger<EntitiesManager<TEntity, TDocument>> logger, IUserContext userContext)
-        : base(redisUtil, logger, userContext)
+    protected EntitiesManager(ICosmosRepository<TDocument> repo, IRedisUtil redisUtil, ILogger<EntitiesManager<TEntity, TDocument>> logger,
+        IUserContext userContext) : base(redisUtil, logger, userContext)
     {
         Repo = repo;
     }
@@ -57,7 +59,7 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
         return document.Adapt<TEntity>();
     }
 
-    public virtual async ValueTask<List<TEntity>> GetAll<TResponse>(RequestDataOptions options, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<PagedResult<TEntity>> GetAll<TResponse>(RequestDataOptions options, CancellationToken cancellationToken = default)
     {
         List<TDocument> docs = await Repo.GetAll(null, cancellationToken).NoSync();
 
@@ -69,7 +71,13 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
             result.Add(doc.Adapt<TEntity>());
         }
 
-        return result;
+        PagedResult<TEntity> pagedResult = new()
+        {
+            Items = result,
+            PageSize = options.PageSize
+        };
+
+        return pagedResult;
     }
 
     public virtual async ValueTask<TEntity> Update(TEntity entity, CancellationToken cancellationToken = default)
