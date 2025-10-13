@@ -1,6 +1,4 @@
-﻿using Mapster;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Soenneker.Cosmos.Repository.Abstract;
 using Soenneker.Documents.Document;
 using Soenneker.Dtos.RequestDataOptions;
@@ -37,7 +35,7 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
     {
         entity.CreatedAt = DateTime.UtcNow;
 
-        var document = entity.Adapt<TDocument>();
+        var document = entity.AdaptViaReflection<TDocument>();
 
         document.DocumentId = Guid.NewGuid().ToString();
         document.PartitionKey = document.DocumentId;
@@ -56,7 +54,7 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
         if (document == null)
             throw new EntityNotFoundException(typeof(TEntity), id);
 
-        return document.Adapt<TEntity>();
+        return document.AdaptViaReflection<TEntity>();
     }
 
     public virtual async ValueTask<PagedResult<TEntity>> GetAll<TResponse>(RequestDataOptions options, CancellationToken cancellationToken = default)
@@ -68,7 +66,7 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
         for (var i = 0; i < docs.Count; i++)
         {
             TDocument doc = docs[i];
-            result.Add(doc.Adapt<TEntity>());
+            result.Add(doc.AdaptViaReflection<TEntity>());
         }
 
         PagedResult<TEntity> pagedResult = new()
@@ -90,11 +88,11 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
 
         entity.ModifiedAt = DateTime.UtcNow;
 
-        var toUpdateDocument = entity.Adapt<TDocument>();
+        var toUpdateDocument = entity.AdaptViaReflection<TDocument>();
 
         TDocument updatedDocument = await Repo.UpdateItem(entity.Id, toUpdateDocument, cancellationToken: CancellationToken.None).NoSync();
 
-        return updatedDocument.Adapt<TEntity>();
+        return updatedDocument.AdaptViaReflection<TEntity>();
     }
 
     public virtual async ValueTask Delete(string id, CancellationToken cancellationToken = default)
