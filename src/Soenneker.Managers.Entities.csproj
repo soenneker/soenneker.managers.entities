@@ -47,7 +47,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Soenneker.Cosmos.Repository" Version="4.0.7262" />
+        <PackageReference Include="Soenneker.Cosmos.Repository" Version="4.0.7266" />
         <PackageReference Include="Soenneker.Dtos.RequestDataOptions" Version="4.0.64" />
         <PackageReference Include="Soenneker.Dtos.Results.Paged" Version="4.0.12" />
         <PackageReference Include="Soenneker.Gen.Adapt" Version="4.0.41">
