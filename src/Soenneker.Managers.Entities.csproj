@@ -54,6 +54,6 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Soenneker.Managers.Base" Version="4.0.258" />
+        <PackageReference Include="Soenneker.Managers.Base" Version="4.0.259" />
     </ItemGroup>
 </Project>
