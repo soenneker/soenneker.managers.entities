@@ -18,7 +18,7 @@
         <AssemblyName>Soenneker.Managers.Entities</AssemblyName>
         <PackageId>Soenneker.Managers.Entities</PackageId>
         <PackageTags>managers entities manager basemanager usercontext entity cosmos db document entitiesmanager util csharp dotnet c# .net</PackageTags>
-        <Copyright>Copyright © 2025 Jake Soenneker</Copyright>
+        <Copyright>Copyright © 2025-2026 Jake Soenneker</Copyright>
         <Authors>Jake Soenneker</Authors>
         <Company>https://soenneker.com</Company>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
