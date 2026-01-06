@@ -86,7 +86,7 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
             throw new EntityNotFoundException(typeof(TEntity), entity.Id);
 
 
-        entity.ModifiedAt = DateTime.UtcNow;
+        entity.ModifiedAt = DateTimeOffset.UtcNow;
 
         var toUpdateDocument = entity.AdaptViaReflection<TDocument>();
 
