@@ -49,7 +49,7 @@
         <PackageReference Include="Soenneker.Cosmos.Repository" Version="4.0.8002" />
         <PackageReference Include="Soenneker.Dtos.RequestDataOptions" Version="4.0.163" />
         <PackageReference Include="Soenneker.Dtos.Results.Paged" Version="4.0.38" />
-        <PackageReference Include="Soenneker.Gen.Adapt" Version="4.0.82">
+        <PackageReference Include="Soenneker.Gen.Adapt" Version="4.0.83">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
