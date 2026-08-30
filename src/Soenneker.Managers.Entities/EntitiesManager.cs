@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 
 namespace Soenneker.Managers.Entities;
 
-/// <inheritdoc cref="IEntitiesManager{TEntity}"/>
 public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntitiesManager<TEntity> where TEntity : Entity, new() where TDocument : Document
 {
     /// <summary>
@@ -40,7 +39,7 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
         document.DocumentId = Guid.NewGuid().ToString();
         document.PartitionKey = document.DocumentId;
 
-        string returnedId = await Repo.AddItem(document, cancellationToken: CancellationToken.None).NoSync();
+        string returnedId = await Repo.AddItem(document, cancellationToken: cancellationToken).NoSync();
 
         entity.Id = returnedId;
 
@@ -59,7 +58,8 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
 
     public virtual async ValueTask<PagedResult<TEntity>> GetAll<TResponse>(RequestDataOptions options, CancellationToken cancellationToken = default)
     {
-        List<TDocument> docs = await Repo.GetAll(null, cancellationToken).NoSync();
+        double? maxItemCount = options.PageSize > 0 ? options.PageSize : null;
+        List<TDocument> docs = await Repo.GetAll(maxItemCount, cancellationToken).NoSync();
 
         List<TEntity> result = new(docs.Count);
 
@@ -90,7 +90,7 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
 
         var toUpdateDocument = entity.AdaptViaReflection<TDocument>();
 
-        TDocument updatedDocument = await Repo.UpdateItem(entity.Id, toUpdateDocument, cancellationToken: CancellationToken.None).NoSync();
+        TDocument updatedDocument = await Repo.UpdateItem(entity.Id, toUpdateDocument, cancellationToken: cancellationToken).NoSync();
 
         return updatedDocument.AdaptViaReflection<TEntity>();
     }
@@ -102,6 +102,6 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
         if (document == null)
             throw new EntityNotFoundException(typeof(TEntity), id);
 
-        await Repo.DeleteItem(id, cancellationToken: CancellationToken.None).NoSync();
+        await Repo.DeleteItem(id, cancellationToken: cancellationToken).NoSync();
     }
 }

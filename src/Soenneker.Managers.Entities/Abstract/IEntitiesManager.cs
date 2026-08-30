@@ -33,10 +33,10 @@ public interface IEntitiesManager<TEntity> : IBaseManager where TEntity : Entity
     ValueTask<TEntity> Get(string id, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Retrieves a list of entities based on request options.
+    /// Retrieves entities from the repository, using <see cref="RequestDataOptions.PageSize"/> as the maximum item count.
     /// </summary>
     /// <typeparam name="TResponse">The response DTO type (currently unused).</typeparam>
-    /// <param name="options">The data options to control filtering, sorting, paging, etc.</param>
+    /// <param name="options">Options whose page size limits the repository read. Other query options are not applied by the base implementation.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A list of entities.</returns>
     [Pure]
