@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 
 namespace Soenneker.Managers.Entities;
 
+/// <inheritdoc cref="IEntitiesManager{TEntity}" />
 public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntitiesManager<TEntity> where TEntity : Entity, new() where TDocument : Document
 {
     /// <summary>
