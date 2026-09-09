@@ -46,13 +46,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Soenneker.Cosmos.Repository" Version="4.0.8250" />
+        <PackageReference Include="Soenneker.Cosmos.Repository" Version="4.0.8251" />
         <PackageReference Include="Soenneker.Dtos.RequestDataOptions" Version="4.0.199" />
         <PackageReference Include="Soenneker.Dtos.Results.Paged" Version="4.0.45" />
         <PackageReference Include="Soenneker.Gen.Adapt" Version="4.0.90">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Soenneker.Managers.Base" Version="4.0.653" />
+        <PackageReference Include="Soenneker.Managers.Base" Version="4.0.654" />
     </ItemGroup>
 </Project>
