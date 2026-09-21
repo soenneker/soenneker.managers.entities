@@ -14,19 +14,22 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Soenneker.Cosmos.Repository.Dtos;
 
 namespace Soenneker.Managers.Entities;
 
 /// <inheritdoc cref="IEntitiesManager{TEntity}" />
-public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntitiesManager<TEntity> where TEntity : Entity, new() where TDocument : Document
+public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntitiesManager<TEntity>
+    where TEntity : Entity, new() where TDocument : Document
 {
     /// <summary>
     /// The repository made available from ctor
     /// </summary>
     protected ICosmosRepository<TDocument> Repo { get; }
 
-    protected EntitiesManager(ICosmosRepository<TDocument> repo, IRedisUtil redisUtil, ILogger<EntitiesManager<TEntity, TDocument>> logger,
-        IUserContext userContext) : base(redisUtil, logger, userContext)
+    protected EntitiesManager(ICosmosRepository<TDocument> repo, IRedisUtil redisUtil,
+        ILogger<EntitiesManager<TEntity, TDocument>> logger, IUserContext userContext) : base(redisUtil, logger,
+        userContext)
     {
         Repo = repo;
     }
@@ -47,9 +50,10 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
         return entity;
     }
 
-    public virtual async ValueTask<TEntity> Get(string id, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<TEntity> Get(string id, CosmosReadOptions? cosmosReadOptions = null,
+        CancellationToken cancellationToken = default)
     {
-        TDocument? document = await Repo.GetItem(id, cancellationToken).NoSync();
+        TDocument? document = await Repo.GetItem(id, cosmosReadOptions, cancellationToken).NoSync();
 
         if (document == null)
             throw new EntityNotFoundException(typeof(TEntity), id);
@@ -57,10 +61,11 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
         return document.AdaptViaReflection<TEntity>();
     }
 
-    public virtual async ValueTask<PagedResult<TEntity>> GetAll<TResponse>(RequestDataOptions options, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<PagedResult<TEntity>> GetAll<TResponse>(RequestDataOptions options,
+        CosmosReadOptions? cosmosReadOptions = null, CancellationToken cancellationToken = default)
     {
         double? maxItemCount = options.PageSize > 0 ? options.PageSize : null;
-        List<TDocument> docs = await Repo.GetAll(maxItemCount, cancellationToken).NoSync();
+        List<TDocument> docs = await Repo.GetAll(maxItemCount, cosmosReadOptions, cancellationToken).NoSync();
 
         List<TEntity> result = new(docs.Count);
 
@@ -79,9 +84,10 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
         return pagedResult;
     }
 
-    public virtual async ValueTask<TEntity> Update(TEntity entity, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<TEntity> Update(TEntity entity, CosmosReadOptions? cosmosReadOptions = null,
+        CosmosWriteOptions? cosmosWriteOptions = null, CancellationToken cancellationToken = default)
     {
-        TDocument? existingDocument = await Repo.GetItem(entity.Id, cancellationToken).NoSync();
+        TDocument? existingDocument = await Repo.GetItem(entity.Id, cosmosReadOptions, cancellationToken).NoSync();
 
         if (existingDocument == null)
             throw new EntityNotFoundException(typeof(TEntity), entity.Id);
@@ -91,18 +97,20 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
 
         var toUpdateDocument = entity.AdaptViaReflection<TDocument>();
 
-        TDocument updatedDocument = await Repo.UpdateItem(entity.Id, toUpdateDocument, cancellationToken: cancellationToken).NoSync();
+        TDocument updatedDocument = await Repo.UpdateItem(entity.Id, toUpdateDocument, writeOptions: cosmosWriteOptions,
+            cancellationToken: cancellationToken).NoSync();
 
         return updatedDocument.AdaptViaReflection<TEntity>();
     }
 
-    public virtual async ValueTask Delete(string id, CancellationToken cancellationToken = default)
+    public virtual async ValueTask Delete(string id, CosmosReadOptions? cosmosReadOptions = null,
+        CosmosWriteOptions? cosmosWriteOptions = null, CancellationToken cancellationToken = default)
     {
-        TDocument? document = await Repo.GetItem(id, cancellationToken).NoSync();
+        TDocument? document = await Repo.GetItem(id, cosmosReadOptions, cancellationToken).NoSync();
 
         if (document == null)
             throw new EntityNotFoundException(typeof(TEntity), id);
 
-        await Repo.DeleteItem(id, cancellationToken: cancellationToken).NoSync();
+        await Repo.DeleteItem(id, writeOptions: cosmosWriteOptions, cancellationToken: cancellationToken).NoSync();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Soenneker.Dtos.RequestDataOptions;
+﻿using Soenneker.Cosmos.Repository.Dtos;
+using Soenneker.Dtos.RequestDataOptions;
 using Soenneker.Dtos.Results.Paged;
 using Soenneker.Entities.Entity;
 using Soenneker.Exceptions.Suite;
@@ -26,37 +27,46 @@ public interface IEntitiesManager<TEntity> : IBaseManager where TEntity : Entity
     /// Retrieves a single entity by its identifier.
     /// </summary>
     /// <param name="id">The ID of the entity to retrieve.</param>
+    /// <param name="cosmosReadOptions">Overrides repository read defaults. Null inherits them; an explicit empty value restores SDK defaults.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The entity corresponding to the given ID.</returns>
     /// <exception cref="EntityNotFoundException">Thrown if the entity is not found.</exception>
     [Pure]
-    ValueTask<TEntity> Get(string id, CancellationToken cancellationToken = default);
+    ValueTask<TEntity> Get(string id, CosmosReadOptions? cosmosReadOptions = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves entities from the repository, using <see cref="RequestDataOptions.PageSize"/> as the maximum item count.
     /// </summary>
     /// <typeparam name="TResponse">The response DTO type (currently unused).</typeparam>
     /// <param name="options">Options whose page size limits the repository read. Other query options are not applied by the base implementation.</param>
+    /// <param name="cosmosReadOptions">Overrides repository read defaults. Null inherits them; an explicit empty value restores SDK defaults.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A list of entities.</returns>
     [Pure]
-    ValueTask<PagedResult<TEntity>> GetAll<TResponse>(RequestDataOptions options, CancellationToken cancellationToken = default);
+    ValueTask<PagedResult<TEntity>> GetAll<TResponse>(RequestDataOptions options, CosmosReadOptions? cosmosReadOptions = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Updates an existing entity in the data store.
     /// </summary>
     /// <param name="entity">The entity with updated information.</param>
+    /// <param name="cosmosReadOptions">Overrides repository read defaults. Null inherits them; an explicit empty value restores SDK defaults.</param>
+    /// <param name="cosmosWriteOptions">Can require ETags for this call; cannot disable the repository ETag requirement. Unconditional writes are rejected when ETags are required.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The updated entity.</returns>
     /// <exception cref="EntityNotFoundException">Thrown if the entity to update is not found.</exception>
-    ValueTask<TEntity> Update(TEntity entity, CancellationToken cancellationToken = default);
+    ValueTask<TEntity> Update(TEntity entity, CosmosReadOptions? cosmosReadOptions = null, CosmosWriteOptions? cosmosWriteOptions = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Deletes an entity from the data store by ID.
     /// </summary>
     /// <param name="id">The ID of the entity to delete.</param>
+    /// <param name="cosmosReadOptions">Overrides repository read defaults. Null inherits them; an explicit empty value restores SDK defaults.</param>
+    /// <param name="cosmosWriteOptions">Can require ETags for this call; cannot disable the repository ETag requirement. Unconditional writes are rejected when ETags are required.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     /// <exception cref="EntityNotFoundException">Thrown if the entity to delete is not found.</exception>
-    ValueTask Delete(string id, CancellationToken cancellationToken = default);
+    ValueTask Delete(string id, CosmosReadOptions? cosmosReadOptions = null, CosmosWriteOptions? cosmosWriteOptions = null,
+        CancellationToken cancellationToken = default);
 }
