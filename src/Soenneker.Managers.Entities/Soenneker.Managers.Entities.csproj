@@ -55,4 +55,7 @@
         </PackageReference>
         <PackageReference Include="Soenneker.Managers.Base" Version="4.0.683" />
     </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Soenneker.Entities.Entity" Version="4.0.700" />
+    </ItemGroup>
 </Project>
