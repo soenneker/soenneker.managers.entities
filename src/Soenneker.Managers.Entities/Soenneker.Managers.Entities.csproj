@@ -46,14 +46,14 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Soenneker.Cosmos.Repository" Version="4.0.8331" />
-        <PackageReference Include="Soenneker.Dtos.RequestDataOptions" Version="4.0.208" />
-        <PackageReference Include="Soenneker.Dtos.Results.Paged" Version="4.0.50" />
-        <PackageReference Include="Soenneker.Gen.Adapt" Version="4.0.95">
+        <PackageReference Include="Soenneker.Cosmos.Repository" Version="4.0.8342" />
+        <PackageReference Include="Soenneker.Dtos.RequestDataOptions" Version="4.0.212" />
+        <PackageReference Include="Soenneker.Dtos.Results.Paged" Version="4.0.51" />
+        <PackageReference Include="Soenneker.Gen.Adapt" Version="4.0.96">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Soenneker.Managers.Base" Version="4.0.685" />
+        <PackageReference Include="Soenneker.Managers.Base" Version="4.0.686" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Soenneker.Entities.Entity" Version="4.0.701" />
