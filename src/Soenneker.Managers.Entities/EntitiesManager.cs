@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Soenneker.Cosmos.Repository.Abstract;
+using Soenneker.Constants.Data;
 using Soenneker.Documents.Document;
 using Soenneker.Dtos.RequestDataOptions;
 using Soenneker.Dtos.Results.Paged;
@@ -18,7 +19,6 @@ using Soenneker.Cosmos.Repository.Dtos;
 
 namespace Soenneker.Managers.Entities;
 
-/// <inheritdoc cref="IEntitiesManager{TEntity}" />
 public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntitiesManager<TEntity>
     where TEntity : Entity, new() where TDocument : Document
 {
@@ -34,11 +34,27 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
         Repo = repo;
     }
 
+    /// <summary>
+    /// Maps an entity to a new document for persistence.
+    /// </summary>
+    /// <param name="entity">The entity to map.</param>
+    /// <returns>The mapped document.</returns>
+    /// <remarks>Implement using concrete source and destination types to enable source-generated mapping without reflection.</remarks>
+    protected abstract TDocument ToDocument(TEntity entity);
+
+    /// <summary>
+    /// Maps a stored document to a new entity.
+    /// </summary>
+    /// <param name="document">The document to map.</param>
+    /// <returns>The mapped entity.</returns>
+    /// <remarks>Implement using concrete source and destination types to enable source-generated mapping without reflection.</remarks>
+    protected abstract TEntity ToEntity(TDocument document);
+
     public virtual async ValueTask<TEntity> Create(TEntity entity, CancellationToken cancellationToken = default)
     {
-        entity.CreatedAt = DateTime.UtcNow;
+        entity.CreatedAt = DateTimeOffset.UtcNow;
 
-        var document = entity.AdaptViaReflection<TDocument>();
+        TDocument document = ToDocument(entity);
 
         document.DocumentId = Guid.NewGuid().ToString();
         document.PartitionKey = document.DocumentId;
@@ -58,27 +74,47 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
         if (document == null)
             throw new EntityNotFoundException(typeof(TEntity), id);
 
-        return document.AdaptViaReflection<TEntity>();
+        return ToEntity(document);
     }
 
-    public virtual async ValueTask<PagedResult<TEntity>> GetAll<TResponse>(RequestDataOptions options,
+    public virtual async ValueTask<List<TEntity>> GetAll(CosmosReadOptions? cosmosReadOptions = null,
+        CancellationToken cancellationToken = default)
+    {
+        List<TDocument> docs = await Repo.GetAll(readOptions: cosmosReadOptions, cancellationToken: cancellationToken)
+                                         .NoSync();
+
+        List<TEntity> result = new(docs.Count);
+
+        for (var i = 0; i < docs.Count; i++)
+        {
+            result.Add(ToEntity(docs[i]));
+        }
+
+        return result;
+    }
+
+    public virtual async ValueTask<PagedResult<TEntity>> GetAllPaged(RequestDataOptions options,
         CosmosReadOptions? cosmosReadOptions = null, CancellationToken cancellationToken = default)
     {
-        double? maxItemCount = options.PageSize > 0 ? options.PageSize : null;
-        List<TDocument> docs = await Repo.GetAll(maxItemCount, cosmosReadOptions, cancellationToken).NoSync();
+        int pageSize = options.PageSize > 0 ? options.PageSize : DataConstants.DefaultCosmosPageSize;
+
+        (List<TDocument> docs, string? continuationToken) = await Repo.GetAllPaged(pageSize: pageSize,
+            continuationToken: options.ContinuationToken, readOptions: cosmosReadOptions,
+            cancellationToken: cancellationToken).NoSync();
 
         List<TEntity> result = new(docs.Count);
 
         for (var i = 0; i < docs.Count; i++)
         {
             TDocument doc = docs[i];
-            result.Add(doc.AdaptViaReflection<TEntity>());
+            result.Add(ToEntity(doc));
         }
 
         PagedResult<TEntity> pagedResult = new()
         {
             Items = result,
-            PageSize = options.PageSize
+            PageSize = pageSize,
+            ContinuationToken = continuationToken
         };
 
         return pagedResult;
@@ -95,12 +131,12 @@ public abstract class EntitiesManager<TEntity, TDocument> : BaseManager, IEntiti
 
         entity.ModifiedAt = DateTimeOffset.UtcNow;
 
-        var toUpdateDocument = entity.AdaptViaReflection<TDocument>();
+        TDocument toUpdateDocument = ToDocument(entity);
 
         TDocument updatedDocument = await Repo.UpdateItem(entity.Id, toUpdateDocument, writeOptions: cosmosWriteOptions,
             cancellationToken: cancellationToken).NoSync();
 
-        return updatedDocument.AdaptViaReflection<TEntity>();
+        return ToEntity(updatedDocument);
     }
 
     public virtual async ValueTask Delete(string id, CosmosReadOptions? cosmosReadOptions = null,

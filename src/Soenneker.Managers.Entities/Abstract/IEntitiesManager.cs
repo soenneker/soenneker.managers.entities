@@ -5,6 +5,7 @@ using Soenneker.Entities.Entity;
 using Soenneker.Exceptions.Suite;
 using Soenneker.Managers.Base.Abstract;
 using System.Diagnostics.Contracts;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,6 +16,7 @@ namespace Soenneker.Managers.Entities.Abstract;
 /// </summary>
 public interface IEntitiesManager<TEntity> : IBaseManager where TEntity : Entity, new()
 {
+
     /// <summary>
     /// Creates a new entity and stores it in the underlying data store.
     /// </summary>
@@ -35,15 +37,28 @@ public interface IEntitiesManager<TEntity> : IBaseManager where TEntity : Entity
     ValueTask<TEntity> Get(string id, CosmosReadOptions? cosmosReadOptions = null, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Retrieves entities from the repository, using <see cref="RequestDataOptions.PageSize"/> as the maximum item count.
+    /// Retrieves all entities from the repository.
     /// </summary>
-    /// <typeparam name="TResponse">The response DTO type (currently unused).</typeparam>
-    /// <param name="options">Options whose page size limits the repository read. Other query options are not applied by the base implementation.</param>
     /// <param name="cosmosReadOptions">Overrides repository read defaults. Null inherits them; an explicit empty value restores SDK defaults.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A list of entities.</returns>
+    /// <returns>All documents mapped to entities.</returns>
+    /// <remarks>Loads the full result set into memory. Use <see cref="GetAllPaged"/> to retrieve one page at a time.</remarks>
     [Pure]
-    ValueTask<PagedResult<TEntity>> GetAll<TResponse>(RequestDataOptions options, CosmosReadOptions? cosmosReadOptions = null,
+    ValueTask<List<TEntity>> GetAll(CosmosReadOptions? cosmosReadOptions = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves one page of entities ordered by creation time descending.
+    /// </summary>
+    /// <param name="options">The requested page size and continuation token. Nonpositive page sizes use the repository's default page size.</param>
+    /// <param name="cosmosReadOptions">Overrides repository read defaults. Null inherits them; an explicit empty value restores SDK defaults.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>The mapped entities, effective page size, and continuation token for the next page, or null when paging is complete.</returns>
+    /// <remarks>
+    /// A page may contain fewer items than requested, including no items, while still having a continuation token.
+    /// Continue using the returned token until it is null. Filtering, search, custom sorting, and total counts are not applied by the base implementation.
+    /// </remarks>
+    [Pure]
+    ValueTask<PagedResult<TEntity>> GetAllPaged(RequestDataOptions options, CosmosReadOptions? cosmosReadOptions = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
