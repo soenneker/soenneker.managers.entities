@@ -46,10 +46,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Soenneker.Cosmos.Repository" Version="4.0.8359" />
+        <PackageReference Include="Soenneker.Cosmos.Repository" Version="4.0.8360" />
         <PackageReference Include="Soenneker.Dtos.RequestDataOptions" Version="4.0.212" />
         <PackageReference Include="Soenneker.Dtos.Results.Paged" Version="4.0.51" />
-        <PackageReference Include="Soenneker.Managers.Base" Version="4.0.689" />
+        <PackageReference Include="Soenneker.Managers.Base" Version="4.0.690" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Soenneker.Entities.Entity" Version="4.0.701" />
