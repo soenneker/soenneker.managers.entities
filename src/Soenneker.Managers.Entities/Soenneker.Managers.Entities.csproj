@@ -47,12 +47,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Soenneker.Cosmos.Repository" Version="4.0.8366" />
-        <PackageReference Include="Soenneker.Dtos.RequestDataOptions" Version="4.0.212" />
-        <PackageReference Include="Soenneker.Dtos.Results.Paged" Version="4.0.51" />
-        <PackageReference Include="Soenneker.Managers.Base" Version="4.0.692" />
+        <PackageReference Include="Soenneker.Cosmos.Repository" Version="4.0.8370" />
+        <PackageReference Include="Soenneker.Dtos.RequestDataOptions" Version="4.0.213" />
+        <PackageReference Include="Soenneker.Dtos.Results.Paged" Version="4.0.52" />
+        <PackageReference Include="Soenneker.Managers.Base" Version="4.0.693" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Soenneker.Entities.Entity" Version="4.0.701" />
+        <PackageReference Include="Soenneker.Entities.Entity" Version="4.0.702" />
     </ItemGroup>
 </Project>
